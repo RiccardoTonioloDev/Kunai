@@ -5,6 +5,7 @@ def xor_enc_strk(data, key):
     newKey = []
     for idx in range(len(data)):
         newKey.insert(0, key[idx % len(key)])
+    print(newKey)
     return [chr(ord(x) ^ ord(y)) for x, y in zip(data, newKey)]
 
 
@@ -41,6 +42,12 @@ def xor_dec_intk(data, key):
 
 
 # USAGE
-print(xor_dec_strk(xor_enc_strk('c', "un carattere"), "un carattere"))
-print(xor_dec_strk(xor_enc_strk("ciao menny", "hello"), "hello"))
-print(xor_dec_intk(xor_enc_intk("ciao carra", 150), 150))
+x = xor_enc_strk('c', "un carattere")
+print(x)
+print(xor_dec_strk(x, "un carattere"))
+x = xor_enc_strk("ciao menny", "hello")
+print(x)
+print(xor_dec_strk(x, "hello"))
+x = xor_enc_intk("ciao carra", 150)
+print(x)
+print(xor_dec_intk(x, 150))
