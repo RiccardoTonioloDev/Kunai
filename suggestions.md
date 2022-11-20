@@ -5,6 +5,8 @@
       2. A single letter that's not the **I** found in the point 1, is the letter: **A**.
     - Strategy **I'LL**:
         1. A single letter with the `'` and another two equal letters following, means: **I'll**.
+    - Strategy **I'VE**:
+        1. A single letter with the `'` and another two different letters following, probably means: **I've**.
 
 2. Find the **E**:
    1. Use the frequency counter and see the most frequent letters.
