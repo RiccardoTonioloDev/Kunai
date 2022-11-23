@@ -20,4 +20,6 @@
 
 4. Common two char words (use them to find better solutions): `in, of, to, is, it, on, no, us, at, un, go, an, my, up, me, as, he, we, so, be, by, or, do, if, hi, bi, ex, ok`
 
-5. Exploit "for-sure" information (maybe you know that you should find a "flag" word in a specific place, and you replace the corresponding letters with correct ones).
+5. Common three char words (use them to find better solutions): `the , man, will, are, was, she, her, his, can, has, had, any, all, out, for, the, and, can, you`
+
+6. Exploit "for-sure" information (maybe you know that you should find a "flag" word in a specific place, and you replace the corresponding letters with correct ones).

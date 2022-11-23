@@ -9,3 +9,5 @@
 - [To encrypt and decrypt the xor](./xor_enc_dec.py)
     > **WARNING:** please understand that this is an interpretation of the xor encryption/decryption algorithm. Your situation may require a different intrepretation of it.
 - [Suggestions for good and precise char replacement](./suggestions.md)
+- [Usage of requests in python](./request.py)
+- [Suggestions for web challenges](./suggestions_web.py)
