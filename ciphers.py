@@ -3,7 +3,7 @@ from shifting_by_key import shift_char_by_key, deshift_char_by_key
 
 
 def vigenere_enc(data, key):
-    # PRE: data is a string with only alphabetic chars; data is a string with only alphabetic chars
+    # PRE: data is a string with only alphabetic chars; key is a string with only alphabetic chars
     # POST: encryption with vigenere algorithm
     cif_string = ""
     for i in range(len(data)):

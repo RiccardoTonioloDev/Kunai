@@ -1,5 +1,6 @@
 def find_in(to_search, space):
     # PRE: to_search and space are both strings
+    # POST: returns a tuple containing if the word to seach is found in space, and the index of the first position
 
     # Lowering the case to improve search without seeing at the case
     to_searchLW = to_search.lower()
