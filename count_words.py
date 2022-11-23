@@ -1,15 +1,18 @@
 import string
 
 
-def count_words(text, letters = None):
+def count_words(text, letters=None):
+    # PRE: text is a string; letters eventually is a number
+    # POST: it returns a dictionary with the frequencies of all the words in the text.
+    # If letters is specified, then the words will be filtered on their length being equal to letters.
     for letter in text:
-            if letter not in string.ascii_letters:
-                text = text.replace(letter, " ")
+        if letter not in string.ascii_letters:
+            text = text.replace(letter, " ")
 
     if letters is None:
         Words = text.split()
-        wfreq=[Words.count(w) for w in Words]
-        return dict(sorted(dict(zip(Words, wfreq)).items() , key=lambda item:item[1], reverse=True))
+        wfreq = [Words.count(w) for w in Words]
+        return dict(sorted(dict(zip(Words, wfreq)).items(), key=lambda item: item[1], reverse=True))
     else:
         Words = {}
         for word in text.split():
@@ -22,3 +25,4 @@ def count_words(text, letters = None):
 
 # USAGE
 print(count_words("pronto prova, sa sa, prova microfono, uno due 3"))
+print(count_words("pronto prova, sa sa, prova microfono, uno due 3", 3))
