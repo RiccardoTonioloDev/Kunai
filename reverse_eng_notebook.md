@@ -38,7 +38,7 @@ After that you can:
 - run `break <functionName>`: to set a breakpoint at the beginning of the funciont (i.e. <u>break main</u>);
     - alterantively:
       - `b <functionName>` you can abbreviate "break" with "b";
-      - `break <pointer>` you can place a breakpoint on a specific pointer of a line of code (**keepInMind:** the pointer has to be specified in the 0x\<something> format to be accepted (i.e. b *0x00000000004008a8 or b *0x4008a8));
+      - `break *<pointer>` you can place a breakpoint on a specific pointer of a line of code (**keepInMind:** the pointer has to be specified in the 0x\<something> format to be accepted (i.e. b *0x00000000004008a8 or b *0x4008a8));
 
     **WARNING:** it could happen that GDB says 'Cannot insert breakpoint \<numberOfBreakpoint>' and that it can't access the memory at address \<addressOfBreakpoint>. To solve this problem just use the `delete` command, to remove all the breakpoints, then use the `c` command, to continue the execution of the program to reach its end. Now if you inspect again the `disas main`, or wathever function you were disassembling, the addresses are changed, and you can try re-setting you breakpoints with the new addresses.
 - run `run` (alternatively just `r`): to run the execution of the code;
