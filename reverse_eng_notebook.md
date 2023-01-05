@@ -1,8 +1,10 @@
 # Reverse Engineering Basics
+- **BROKEN:** do `strings <fileName> | grep "<stringToSearch>"` to search for a specific string in the binary (maybe with it you can directly find the flag);
 - In this specific order, those are the registers used to pass parameters to functions:
   - `rdi`, `rsi`, `rdx`, `rcx`, `r8`, `r9`, and so on with numbers;
   - **NOTE:** you can replace the `r` with `e` and it's the same register but with a different name (it indicates only that the size rappresented is different);
 - To return a value, usually the registers `rax` (=`eax`);
+- `test <source1><source1>` see if source1 it's empty (doing a bit to bit logic and), and if it's empty returns 0 otherwise it returns 1; 
 - `call qword ptr [<registername>]`: it calls the function that's pointed by the pointer value inside of the register (i.e. call qword ptr[rbx]);
 - How the JUMP instruction works? (the example is only with `jz` but it's the same logic for every jump):
   - if the instruction is `jz <address1> <address2>`, if the condition is met (in this specific case the ZERO_FLAG is at 0), we will jump at `<address1>` else we jump at `<address2>`;
@@ -12,9 +14,16 @@
 # Patching
 - To replace a call with NOP you have to replace every single 2 digit hex number of the call with the HEX value of NOP, that's `90`; 
 - **Visit [HERE](http://ref.x86asm.net/coder32.html) to have the HEX format of Assembly x86 commands**;
+- **NOTE:** you can patch directly inside IDA going to:
+  - Edit -> Patch Program -> Patch bytes;
+  - After you patched what you wanted, go to save it doing: Edit -> Patch Program -> Apply patches to input file;
 
 **NOTE:** that patching shouldn't always be done; a lot of times you can just simply debug and inspect values, if all you have to do is find a flag. Patching could lead to not executing function that the process care about to execute correctly.
 # Debugging
+## Basics
+- You can use the command `jump <FunctionName>` when for example you are on a breakpoint, to execute a spefic function, without following the normal flow of the code;
+- **NOTE:** you can combine the `jump` to various strategic breakpoints to execute the code flow as you like.
+
 ## AntiDebugging
 If you are trying to use GDB but it doesn't work (i.e. message there is already a debugger), there is an anti-debugging technique applied.
 Try to search for a `ptrace`. Usually it's called at the beginning of the main, and if it's not there you could try to search inside of `_start` (the file that calls the main to start the process).
@@ -46,7 +55,9 @@ After that you can:
 - run `jump <functionName>`: to execute a specific function (ignoring the codeflow);
 - run `disas <functionName>`: to disassemble the function (keep in mind that the disassembler could reverse the operands order in the instructions);
 - run `printf "%s", (char*) <nameOfBuffer>`: if you hit a specific breakpoint and you want to see inside of a specific buffer (and you know that there is a string there), you can use this command;
-- run `x/s <ptrOfBuffer>`: it does the same thing as the command before; it allows you to see inside a buffer, that HAS TO BE specified in the 0x\<something> format (i.e. x/s *0x6013E8);
+- run `x/s <ptrOfBuffer>`: it does the same thing as the command before; it allows you to see inside a buffer, that HAS TO BE specified in the 0x<something> format (i.e. x/s *0x6013E8);
+  - `$<nameOfRegister>` in case of register (and not addresses in hex formats), and `&<variableNames>` in case of variable names (inside the memory);
+- run `x/i &<nameOfBuffer>`:  it shows you the memory address of a specific buffer (varible in memory);
 - run `exit`: to exit gdb;
 - run `info registers`: this will show you the values inside every single register at a specific point in the code. You can combine the information of the registers during a specific breakpoint, with the `x/s` command, to analyze each value, inspecting parameters or return values as you wish.
 # Pwning
