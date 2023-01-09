@@ -281,14 +281,15 @@ If you can patch the program, probably you should do it. The most useful things 
    2. Replacing unwanted calls with `NOP`;
    3. In some strange cases, if you have to set to zero a registers, and you only have only four hex digits to change, you can do `xor <register> <register>`;
 ## Pwning & Debugging related:
-1. If you only have to reach a flag with some specified keyword in it, use the combo `strings` with `grep`.
-2. Use `checksec <fileName>` to see if **RELRO** and **PIE** are enabled, then probably the GOT Hijacking it's not the solution.
+1. If you only have to <u>reach a flag with some specified keyword</u> in it, use the combo `strings` with `grep`.
+2. Use `checksec <fileName>` to see if **RELRO** and **PIE** are enabled, then probably the GOT Hijacking it's not the solution. Do it anyways just to check the address architecture.
 3. If the program (strangely) asks you to put two addresses where the first one will be overwritten by the second one, then probably the GOT Hijacking it's the solution.
 4. If you have to execute a specific function outside of the main then:
    1. If you can use GDB and the `jump` command, then use it in the right place and you are done (maybe help yourself with some breakpoints, and analyze at worst registers or memory with `x` or the `printf` command that you can find in one of the upper section);
       1. If you can use GDB keep in mind that some counter methods could be applied, like for example `ptrace`. Check in the ReverseEngeneering/Debugging section, to see how to avoid them.
-   2. If you can't do the upper option than maybe pwning it's the right choice. If it's the case control three things (if one of them it's true, use their solution method):
-      1. Using pwning you should overwrite some variable in the memory, by exceding the buffer, that will be later checked by a `compare`. If this is the case, than you only have to understand by how much you have to write to put values inside the wanted buffer.
-      2. Using pwning you should call another function that's not called by the normal execution flow. If that's the case you have to use the `pattern` method offered by gdb-peda, to find the distance of the caller return pointer.
-         - **NOTE**: in this case after doing `pattern_search` (in the correct way), you should search for the `EIP/RIP` and `ESP/RSP` registers, and see the offset.
-      3.  Using pwning you have to chain sequences of instructions to gain what you want, than you should use the **ROP chain** method.
+     1. If you can't do the upper option than maybe pwning it's the right choice. If it's the case control three things (if one of them it's true, use their solution method):
+         1. Using pwning you should overwrite some variable in the memory, by exceding the buffer, that will be later checked by a `compare`. If this is the case, than you only have to understand by how much you have to write to put values inside the wanted buffer.
+         2. Using pwning you should call another function that's not called by the normal execution flow. If that's the case you have to use the `pattern` method offered by gdb-peda, to find the distance of the caller return pointer.
+            - **NOTE**: in this case after doing `pattern_search` (in the correct way), you should search for the `EIP/RIP` and `ESP/RSP` registers, and see the offset.
+         3.  Using pwning you have to chain sequences of instructions to gain what you want, than you should use the **ROP chain** method.
+         4. If you have to spawn a shell and all you can do is inserting a value in the buffer that will be processed by the `call` in assembly, that try using the **hex shell injection** described in the sections before.
