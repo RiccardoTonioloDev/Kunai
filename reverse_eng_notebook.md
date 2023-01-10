@@ -292,4 +292,6 @@ If you can patch the program, probably you should do it. The most useful things 
          2. Using pwning you should call another function that's not called by the normal execution flow. If that's the case you have to use the `pattern` method offered by gdb-peda, to find the distance of the caller return pointer.
             - **NOTE**: in this case after doing `pattern_search` (in the correct way), you should search for the `EIP/RIP` and `ESP/RSP` registers, and see the offset.
          3.  Using pwning you have to chain sequences of instructions to gain what you want, than you should use the **ROP chain** method.
+            1. Remember to use the `ROPgadget` to find the elements that you want to use (search for `ret` to have the mini gadgets you need).
+            2. Remember to align the stack with the `ret` only instruction in case you have to call a gadget that uses `system`.
          4. If you have to spawn a shell and all you can do is inserting a value in the buffer that will be processed by the `call` in assembly, that try using the **hex shell injection** described in the sections before.
