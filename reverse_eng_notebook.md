@@ -9,6 +9,24 @@
 - How the JUMP instruction works? (the example is only with `jz` but it's the same logic for every jump):
   - if the instruction is `jz <address1> <address2>`, if the condition is met (in this specific case the ZERO_FLAG is at 0), we will jump at `<address1>` else we jump at `<address2>`;
 - **Visit  [HERE](https://www.tutorialspoint.com/assembly_programming/assembly_conditions.htm) to see how every jump behaves**;
+- How the `test` command works:
+```assembly
+; Conditional Jump
+test cl,cl   ; set ZF to 1 if cl == 0
+jz 0x804f430  ; jump if ZF == 1
+
+; Conditional Jump with NOT
+test cl, cl   ; set ZF to 1 if cl == 0
+jnz 0x804f430  ; jump if ZF == 0
+
+; or
+test eax, eax  ; set SF to 1 if eax < 0 (negative)
+js error ; jump if SF == 1
+
+;regular application
+test al, $0F      ; set ZF if "al AND $0f = 0" (here: address-align test for 16b)
+jnz @destination  ; jump if eax IS NOT "MODULO 16=0"
+```
 
 **NOTE:** `cmp <register1> <register2>` <u>sets the ZERO_FLAG at 0 if the two registers are equal</u>.
 # Patching
@@ -181,7 +199,6 @@ from pwn import *
 # Here there is another way to setup a pwntools process. While setting the context, we are specifying what process 
 context.binary = './vuln'
 
-import os
 
 # Here it's setting up the process using the context builded before
 io = process(context.binary.path)
