@@ -1,5 +1,10 @@
 # Reverse Engineering Basics
 - **BROKEN:** do `strings <fileName> | grep "<stringToSearch>"` to search for a specific string in the binary (maybe with it you can directly find the flag);
+- **BROKEN:** when disassembling every file with gdb, do:
+  - b main: to set a breakpoint on the main function;
+  - r: to run the program that will be blocked by the breakpoint on the main function;
+  - disas main: to achieve the new real addresses of the main function.
+  - This will prevent the PIE to give you addresses that are not true, but only logical.
 - In this specific order, those are the registers used to pass parameters to functions:
   - `rdi`, `rsi`, `rdx`, `rcx`, `r8`, `r9`, and so on with numbers;
   - **NOTE:** you can replace the `r` with `e` and it's the same register but with a different name (it indicates only that the size rappresented is different);
@@ -74,7 +79,8 @@ After that you can:
 - run `jump <functionName>`: to execute a specific function (ignoring the codeflow);
 - run `disas <functionName>`: to disassemble the function (keep in mind that the disassembler could reverse the operands order in the instructions);
 - run `printf "%s", (char*) <nameOfBuffer>`: if you hit a specific breakpoint and you want to see inside of a specific buffer (and you know that there is a string there), you can use this command;
-- run `x/s <ptrOfBuffer>`: it does the same thing as the command before; it allows you to see inside a buffer, that HAS TO BE specified in the 0x<something> format (i.e. x/s *0x6013E8);
+  - run `print <registerName>` to print the content of a register in the HEX 0x format;
+- run `x/s <ptrOfBuffer>` (**not with registers, use print instead**): it does the same thing as the command before; it allows you to see inside a buffer, that HAS TO BE specified in the 0x<something> format (i.e. x/s *0x6013E8);
   - `$<nameOfRegister>` in case of register (and not addresses in hex formats), and `&<variableNames>` in case of variable names (inside the memory);
 - run `x/i &<nameOfBuffer>`:  it shows you the memory address of a specific buffer (varible in memory);
 - run `exit`: to exit gdb;
