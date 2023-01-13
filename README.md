@@ -1,5 +1,5 @@
 # Kunai
- A library of functions for cryptoanalysis, (enc/dec)ryption, (enc/dec)oding. The name is inspired from the library [ctf-katana](https://github.com/JohnHammond/ctf-katana) by [John Hammond](https://github.com/JohnHammond).
+ A library of functions for cryptoanalysis, (enc/dec)ryption, (enc/dec)oding, reverse engineering, pwning, GOT hijacking, ROP chains hijacking. The name is inspired from the library [ctf-katana](https://github.com/JohnHammond/ctf-katana) by [John Hammond](https://github.com/JohnHammond).
 
 - [For encoding/deconding (b64, HEX, binToString)](./encode_decode.py)
 - [For char replacement](./char_replacer.py)
@@ -12,3 +12,4 @@
 - [Suggestions for good and precise char replacement](./suggestions.md)
 - [Usage of requests in python](./request.py)
 - [Suggestions for web challenges](./suggestions_web.py)
+- [Manual on how to reverse engineer](./reverse_eng_notebook.py)
