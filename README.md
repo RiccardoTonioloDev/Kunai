@@ -12,4 +12,4 @@
 - [Suggestions for good and precise char replacement](./suggestions.md)
 - [Usage of requests in python](./request.py)
 - [Suggestions for web challenges](./suggestions_web.py)
-- [Manual on how to reverse engineer](./reverse_eng_notebook.py)
+- [Manual on how to reverse engineer](./reverse_eng_notebook.md)
